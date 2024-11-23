@@ -17,30 +17,18 @@ export default function Login() {
     e.preventDefault();
     try {
       const { data } = await loginUser({ variables: { email, password } });
-      alert('Login successful! Token: ' + data.loginUser);
+      alert('Login successful!');
       localStorage.setItem('token', data.loginUser);
     } catch (err) {
-      alert('Login failed: ' + err.message);
+      alert('Error: ' + err.message);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <h1>Login</h1>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
+      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
       <button type="submit">Login</button>
     </form>
   );

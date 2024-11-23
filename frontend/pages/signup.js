@@ -18,37 +18,19 @@ export default function Signup() {
     e.preventDefault();
     try {
       const { data } = await createUser({ variables: { name, email, password } });
-      alert('Signup successful! Token: ' + data.createUser);
+      alert('Signup successful!');
       localStorage.setItem('token', data.createUser);
     } catch (err) {
-      alert('Signup failed: ' + err.message);
+      alert('Error: ' + err.message);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <h1>Signup</h1>
-      <input
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
+      <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
       <button type="submit">Signup</button>
     </form>
   );
