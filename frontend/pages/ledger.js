@@ -1,34 +1,69 @@
-import { gql, useQuery, useMutation } from '@apollo/client';
-import client from '../apollo-client';
+import { useEffect, useState } from "react";
+import Layout from "../components/Layout";
+import LedgerForm from "../components/LedgerForm";
+import LedgerList from "../components/LedgerList";
 
-const GET_LEDGERS = gql`
-  query GetLedgers {
-    getLedgers {
-      id
-      date
-      category
-      amount
-      description
-    }
-  }
-`;
+export default function LedgerPage() {
+  const [ledgers, setLedgers] = useState([]);
 
-export default function Ledger() {
-  const { data, loading, error } = useQuery(GET_LEDGERS, { client });
+  const fetchLedgers = async () => {
+    const res = await fetch("/api/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        query: `
+          query {
+            ledgers {
+              id
+              title
+              amount
+              date
+            }
+          }
+        `,
+      }),
+    });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+    const { data } = await res.json();
+    setLedgers(data.ledgers);
+  };
+
+  const handleAddLedger = async (ledger) => {
+    await fetch("/api/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        query: `
+          mutation {
+            addLedger(title: "${ledger.title}", amount: ${ledger.amount}) {
+              id
+              title
+              amount
+              date
+            }
+          }
+        `,
+      }),
+    });
+
+    fetchLedgers();
+  };
+
+  useEffect(() => {
+    fetchLedgers();
+  }, []);
 
   return (
-    <div>
-      <h1>Your Ledger</h1>
-      <ul>
-        {data.getLedgers.map((ledger) => (
-          <li key={ledger.id}>
-            {ledger.date} - {ledger.category} - ${ledger.amount}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Layout>
+      <h2>Household Ledger</h2>
+      <LedgerForm onAdd={handleAddLedger} />
+      <LedgerList ledgers={ledgers} />
+    </Layout>
   );
 }
