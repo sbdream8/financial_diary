@@ -23,7 +23,6 @@ const typeDefs = gql`
     register(username: String!, password: String!): String
     login(username: String!, password: String!): String
     addLedger(title: String!, amount: Float!): Ledger
-    updateUser(username: String!, password: String!): User
   }
 `;
 

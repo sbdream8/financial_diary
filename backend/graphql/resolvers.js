@@ -33,11 +33,6 @@ const resolvers = {
       const ledger = new Ledger({ userId: user.id, title, amount });
       return await ledger.save();
     },
-    updateUser: async (_, { username, password }, { user }) => {
-      if (!user) throw new Error("Not authenticated");
-      const hashedPassword = await bcrypt.hash(password, 10);
-      return await User.findByIdAndUpdate(user.id, { username, password: hashedPassword }, { new: true });
-    },
   },
 };
 

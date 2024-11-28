@@ -1,7 +1,7 @@
 import { ApolloServer } from "apollo-server-micro";
-import typeDefs from "../../backend/graphql/typeDefs"; // Ensure correct import path
-import resolvers from "../../backend/graphql/resolvers"; // Ensure correct import path
-import dbConnect from "../../backend/utils/dbConnect"; // Ensure MongoDB connection utility is set up
+import typeDefs from "../../graphql/typeDefs";
+import resolvers from "../../graphql/resolvers";
+import dbConnect from "../../utils/dbConnect";
 
 const apolloServer = new ApolloServer({
   typeDefs,
@@ -13,8 +13,8 @@ const apolloServer = new ApolloServer({
       try {
         const jwt = require("jsonwebtoken");
         user = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
-      } catch (error) {
-        console.error("Invalid token:", error);
+      } catch {
+        throw new Error("Invalid token");
       }
     }
     return { user };
@@ -24,13 +24,11 @@ const apolloServer = new ApolloServer({
 const startServer = apolloServer.start();
 
 export default async function handler(req, res) {
-  await dbConnect(); // Ensure MongoDB is connected
+  await dbConnect();
   await startServer;
   return apolloServer.createHandler({ path: "/api/graphql" })(req, res);
 }
 
 export const config = {
-  api: {
-    bodyParser: false, // Disable body parser for GraphQL
-  },
+  api: { bodyParser: false },
 };
